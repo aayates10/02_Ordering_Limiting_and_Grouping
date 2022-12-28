@@ -3,3 +3,11 @@
 -- Order the results alphabetically by nickname.
 -- (51 rows)
 
+SELECT
+CONCAT (state_name,' ' ,'(',state_nickname,')') AS state_and_nickname  
+FROM
+state
+WHERE
+state_nickname IS NOT NULL
+ORDER BY 
+state_nickname ASC;
