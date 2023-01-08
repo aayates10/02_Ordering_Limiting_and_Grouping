@@ -413,3 +413,4 @@ UPDATE pizza SET price =
 UPDATE sale SET total = (SELECT SUM(price) FROM pizza WHERE pizza.sale_id = sale.sale_id);
 
 COMMIT;
+

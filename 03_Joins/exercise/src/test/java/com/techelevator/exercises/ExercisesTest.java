@@ -160,9 +160,7 @@ public class ExercisesTest {
 	}
 
 	@Test
-	public void exerciseProblem14() {
-		checkAnswerForProblem("14");
-	}
+	public void exerciseProblem14(){ checkAnswerForProblem("14");}
 
 	@Test
 	public void exerciseProblem15() {
