@@ -27,11 +27,9 @@ public class JdbcProjectDao implements ProjectDao {
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, projectId);
 		if (results.next()) {
 			project = mapRowToProject(results);
-			//return new Department(id, results.getString("name"));
 
-			return new Project(1, "Not Implemented Yet", null, null);
 		}
-		return null;
+		return project;
 	}
 
 	@Override
@@ -39,9 +37,6 @@ public class JdbcProjectDao implements ProjectDao {
 		List<Project> allProjects = new ArrayList<>();
 
 		String sqlGetAllProjects = "SELECT project_id, name, from_date,to_date FROM project";
-
-		//" Join timesheet ON project_employee.project_id = timesheet.project_id";
-
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetAllProjects);
 		while (results.next()) {
 			allProjects.add(mapRowToProject(results));
@@ -64,31 +59,33 @@ public class JdbcProjectDao implements ProjectDao {
 
 	@Override
 	public void deleteProject(int projectId) {
-		Project project = new Project();
-		String sql = "DELETE FROM project_employee,project WHERE project_id IS NULL;";
-		int numberofProjectDeleted = jdbcTemplate.update(sql, project.getId());
-				if( numberofProjectDeleted==0){
+		String deleteTimesheetSql = "DELETE FROM timesheet WHERE project_id = ?;";
+		int numberOfRowsDeleted = jdbcTemplate.update(deleteTimesheetSql, projectId);
+
+		String deleteProjectEmployeeSql = "DELETE FROM project_employee WHERE project_id = ?;";
+		numberOfRowsDeleted = jdbcTemplate.update(deleteProjectEmployeeSql, projectId);
+
+		String deleteProjectSql = "DELETE FROM project WHERE project_id = ?;";
+		 numberOfRowsDeleted = jdbcTemplate.update(deleteProjectSql, projectId);
+
+				if( numberOfRowsDeleted == 1){
 			System.out.println("Project Was Deleted");
 		}
-				else{
+				else {
 			System.out.println("Project Delete Failed.");
 		}
-		jdbcTemplate.update(sql, projectId);
-
 
 	}
 
-	private Project mapRowToProject(SqlRowSet rowSet) {
+	public Project mapRowToProject(SqlRowSet rowset) {
 		Project project = new Project();
-		project.setId(rowSet.getInt("project_id"));
-		project.setName(rowSet.getString("name"));
-
-
-		if (rowSet.getDate("from_date") !=null){
-			project.setFromDate((rowSet.getDate("from_date")).toLocalDate());
+		project.setId(rowset.getInt("project_id"));
+		project.setName(rowset.getString("name"));
+		if (rowset.getDate("from_date") !=null){
+			project.setFromDate(rowset.getDate("from_date").toLocalDate());
 		}
-		if (rowSet.getDate("to_date") !=null){
-			project.setFromDate(rowSet.getDate("to_date").toLocalDate());
+		if (rowset.getDate("to_date") !=null){
+			project.setToDate(rowset.getDate("to_date").toLocalDate());
 		}
 		return project;
 	}
