@@ -6,6 +6,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import com.techelevator.projects.model.Department;
+import com.techelevator.projects.model.Project;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.techelevator.projects.model.Employee;
@@ -38,9 +39,9 @@ public class JdbcEmployeeDao implements EmployeeDao {
 	public List<Employee> searchEmployeesByName(String firstNameSearch, String lastNameSearch) {
 		List<Employee> employeeNameList = new ArrayList<>();
 
-		String sqlGetNameList = "SELECT * FROM employee WHERE first_name LIKE ? AND last_name LIKE ?;";
+		String sqlGetNameList = "SELECT * FROM employee WHERE first_name ILIKE ? AND last_name ILIKE ?;";
 
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetNameList,"%"+firstNameSearch,"%"+lastNameSearch);
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetNameList,"%"+firstNameSearch+"%", "%"+lastNameSearch+"%");
 		while (results.next()){
 			Employee employeeName = mapRowToEmployee(results);
 			employeeNameList.add(employeeName);
@@ -68,6 +69,9 @@ public class JdbcEmployeeDao implements EmployeeDao {
 
 	@Override
 	public void addEmployeeToProject(int projectId, int employeeId) {
+		String updateprojectSql = "Insert Into Project_employee "
+				+ "Values(?, ?)";
+		jdbcTemplate.update(updateprojectSql,projectId,employeeId);
 	}
 
 	@Override
