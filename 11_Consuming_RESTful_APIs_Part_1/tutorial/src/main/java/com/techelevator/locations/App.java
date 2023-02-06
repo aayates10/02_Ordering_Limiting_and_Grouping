@@ -31,6 +31,8 @@ public class App {
     }
 
     private void handleListLocations() {
+        Location[] locations = locationService.getAll();
+        consoleService.printLocations(locations);
         //Step Five: List all locations
     }
 

@@ -9,6 +9,7 @@ public class LocationService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public Location[] getAll() {
+
         return restTemplate.getForObject(API_BASE_URL, Location[].class);
     }
 

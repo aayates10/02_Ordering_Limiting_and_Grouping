@@ -17,18 +17,25 @@ public class AuctionService {
 
 
     public Auction add(Auction newAuction) {
+        HttpEntity<Auction> entity = makeEntity(newAuction);
+        Auction returnedAuction = null;
+        returnedAuction = restTemplate.postForObject(API_BASE_URL, entity, Auction.class);
+
         // place code here
-        return null;
+        return returnedAuction;
     }
 
     public boolean update(Auction updatedAuction) {
+        HttpEntity<Auction> entity = makeEntity(updatedAuction);
+         restTemplate.put(API_BASE_URL+updatedAuction.getId(), entity);
         // place code here
         return false;
     }
 
     public boolean delete(int auctionId) {
+        restTemplate.delete(API_BASE_URL+auctionId);
         // place code here
-        return false;
+        return true;
     }
 
     public Auction[] getAllAuctions() {
