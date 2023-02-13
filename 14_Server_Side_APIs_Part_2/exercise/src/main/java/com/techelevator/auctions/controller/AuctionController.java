@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,8 @@ import com.techelevator.auctions.dao.AuctionDao;
 import com.techelevator.auctions.model.Auction;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/auctions")
 public class AuctionController {
@@ -26,13 +29,13 @@ public class AuctionController {
         this.dao = dao;
     }
 
-    @RequestMapping( path = "", method = RequestMethod.GET)
+    @RequestMapping(path = "", method = RequestMethod.GET)
     public List<Auction> list(@RequestParam(defaultValue = "") String title_like, @RequestParam(defaultValue = "0") double currentBid_lte) {
 
-        if( !title_like.equals("") ) {
+        if (!title_like.equals("")) {
             return dao.searchByTitle(title_like);
         }
-        if(currentBid_lte > 0) {
+        if (currentBid_lte > 0) {
             return dao.searchByPrice(currentBid_lte);
         }
 
@@ -49,10 +52,24 @@ public class AuctionController {
         }
     }
 
-    @RequestMapping( path = "", method = RequestMethod.POST)
-    public Auction create(@RequestBody Auction auction) {
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(path = "", method = RequestMethod.POST)
+    public Auction create(@Valid @RequestBody Auction auction) {
         return dao.create(auction);
     }
-
-
+    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
+    public Auction update(@Valid @PathVariable int id, @Valid @RequestBody Auction updateAuction) {
+        Auction auction = dao.update(updateAuction, id);
+        if ( auction == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not Found");
+        } else {
+            return dao.update(updateAuction, id);
+        }
+    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @RequestMapping(path = "{id}", method = RequestMethod.DELETE)
+    public void delete ( @PathVariable int id) {
+        dao.delete(id);
+    }
 }
+
